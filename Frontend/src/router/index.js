@@ -41,9 +41,9 @@ const router = createRouter({
     {
       path: '/sportok',
       name: 'sportok',
-      component: () => import('../views/Sportok.vue'),
+      component: () => import('../views/SportsTable.vue'),
       beforeEnter: [checkIfNotLogged],
-      meta: { title: (route) => 'Sportok'}
+      meta: { title: (route) => 'SportsTable'}
     },
     {
       path: '/osztalyok',
