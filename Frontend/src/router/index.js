@@ -48,16 +48,16 @@ const router = createRouter({
     {
       path: '/osztalyok',
       name: 'osztalyok',
-      component: () => import('../views/Osztalyok.vue'),
+      component: () => import('../views/OsztalyTable.vue'),
       beforeEnter: [checkIfNotLogged],
       meta: { title: (route) => 'Osztályok'}
     },
     {
       path: '/diakok',
       name: 'diakok',
-      component: () => import('../views/Diakok.vue'),
+      component: () => import('../views/DiakTable.vue'),
       beforeEnter: [checkIfNotLogged],
-      meta: { title: (route) => 'Dákok'}
+      meta: { title: (route) => 'Diákok'}
     },
     {
       path: '/login',

@@ -14,7 +14,7 @@ class Osztaly extends Model
 
     public function diakok()
     {
-        return $this->hasMany(Diak::class);
+        return $this->hasMany(Diak::class, 'osztalyId');
     }
 
     public function toArray()

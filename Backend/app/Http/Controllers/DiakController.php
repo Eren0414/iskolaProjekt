@@ -10,11 +10,10 @@ class DiakController extends Controller
 {
     public function index()
     {
-        $rows = Diak::all();
-        // $rows = Diak::orderBy('nev', 'asc')->get();
+        $rows = Diak::with('osztaly')->get(); // Betölti az osztály adatokat is
         $data = [
             'message' => 'ok',
-            'data' => $rows
+            'data' => $rows,
         ];
         return response()->json($data, options: JSON_UNESCAPED_UNICODE);
     }
@@ -73,7 +72,6 @@ class DiakController extends Controller
                     'data' => $request->all()
                 ];
             }
-
         } else {
             $data = [
                 'message' => 'Not found',

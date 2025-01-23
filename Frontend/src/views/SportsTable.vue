@@ -1,6 +1,12 @@
 <template>
     <div>
         <h2>Sportok</h2>
+        <!-- Hibaüzenet -->
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" v-if="errorMessage">
+            {{ errorMessage }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                @click="onClickCloseErrorMessage()"></button>
+        </div>
         <!-- Táblázat -->
 
         <table class="table table-striped">
@@ -40,6 +46,7 @@ import SportsForm from "@/components/SportsForm.vue";
 import OperationsCrud from "@/components/OperationsCrud.vue";
 import axios from "axios";
 import * as bootstrap from "bootstrap";
+import { BASE_URL } from "@/helpers/baseUrls";
 
 class DataLine {
     constructor(id = null, sportNev = null) {
@@ -51,50 +58,66 @@ class DataLine {
 export default {
     components: { SportsForm, OperationsCrud, Modal },
     mounted() {
-        this.loadSports(); // Betöltjük az adatokat a komponens betöltésekor
+        this.loadItems();
         this.modal = new bootstrap.Modal("#modal", {
             keyboard: false,
         });
     },
     data() {
         return {
+            urlApi: `${BASE_URL}/sports`,
             modal: null,
             dataLine: new DataLine(),
             selectedRowDataLineId: null,
             messageYesNo: null,
-            state: "Read", // CRUD: Create, Read, Update, Delete
+            state: "Read",
             title: null,
             yes: null,
             no: null,
             size: null,
-            collection: [], // A sportok itt tárolódnak
+            collection: [],
+            errorMessage: null
         };
     },
     methods: {
-        loadSports() {
+        async loadItems() {
             const token = localStorage.getItem('token');
-
-            axios.get("http://localhost:8000/api/sports", {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`,  
-                }
-            })
-                .then(response => {
-                    console.log("Válasz a backendről:", response);
-                    this.collection = response.data.data; 
+            const url = this.urlApi;
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            }
+            try {
+                const response = await axios.get(url, {
+                    headers: headers
                 })
-                .catch(error => {
-                    console.error("Hiba a sportok betöltésekor:", error);
-
-                });
+                this.collection = response.data.data;
+            } catch (error) {
+                this.errorMessage = "Hiba az adatok betöltésekor";
+              
+            }
         },
         //rename
-        deleteDataLineById() {
-            this.collection = this.collection.filter(
-                (p) => p.id != this.selectedRowDataLineId
-            );
+        async deleteDataLineById() {
+            const token = localStorage.getItem('token');
+            const url = `${this.urlApi}/${this.selectedRowDataLineId}`;
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            }
+            console.log("deleteDataLineById", headers);
+            
+            try {
+                const response = await axios.delete(url, {
+                    headers: headers
+                })
+                this.loadItems()
+            } catch (error) {
+                this.errorMessage = "Hiba az adatok betöltésekor";
+              
+            }
         },
         //rename
         createDataLine() {
@@ -141,6 +164,9 @@ export default {
         },
         onClickTr(id) {
             this.selectedRowDataLineId = id;
+        },
+        onClickCloseErrorMessage() {
+            this.errorMessage = null;
         },
 
         saveDataLineHandler(dataLine) {

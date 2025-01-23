@@ -13,13 +13,17 @@ class OsztalyController extends Controller
      */
     public function index()
     {
-        // $products = Sport::all();
-        $rows = Osztaly::orderBy('osztalyNev', 'asc')->get();
-        $data = [
-            'message' => 'ok',
-            'data' => $rows
-        ];
-        return response()->json($data, options: JSON_UNESCAPED_UNICODE);
+        try {
+            $rows = Osztaly::all();
+            return response()->json([
+                'message' => 'ok',
+                'data' => $rows
+            ], 200, [], JSON_UNESCAPED_UNICODE);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

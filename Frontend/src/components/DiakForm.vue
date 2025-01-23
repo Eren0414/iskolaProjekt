@@ -4,10 +4,10 @@
         <form class="row g-4 needs-validation was-validated" novalidate>
             <!-- Name -->
             <div class="col-md-8">
-                <label for="name" class="form-label">Osztály név:</label>
-                <input type="text" class="form-control" id="osztalyNev" required v-model="dataLine.osztalyNev" />
+                <label for="name" class="form-label">Diák név:</label>
+                <input type="text" class="form-control" id="nev" required v-model="dataLine.nev" />
                 <div class="valid-feedback">&nbsp;</div>
-                <div class="invalid-feedback">Osztály név kitöltése kötelező</div>
+                <div class="invalid-feedback">Diák név kitöltése kötelező</div>
             </div>
 
             <button type="submit" class="btn btn-success">Mentés</button>
