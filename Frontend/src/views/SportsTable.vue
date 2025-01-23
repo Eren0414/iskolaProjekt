@@ -47,6 +47,7 @@ import OperationsCrud from "@/components/OperationsCrud.vue";
 import axios from "axios";
 import * as bootstrap from "bootstrap";
 import { BASE_URL } from "@/helpers/baseUrls";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 class DataLine {
     constructor(id = null, sportNev = null) {
@@ -66,6 +67,7 @@ export default {
     data() {
         return {
             urlApi: `${BASE_URL}/sports`,
+            stateAuth: useAuthStore(),
             modal: null,
             dataLine: new DataLine(),
             selectedRowDataLineId: null,
@@ -81,7 +83,8 @@ export default {
     },
     methods: {
         async loadItems() {
-            const token = localStorage.getItem('token');
+            const token = this.stateAuth.token
+            console.log(token);
             const url = this.urlApi;
             const headers = {
                 'Content-Type': 'application/json',
@@ -93,14 +96,15 @@ export default {
                     headers: headers
                 })
                 this.collection = response.data.data;
+
             } catch (error) {
                 this.errorMessage = "Hiba az adatok betöltésekor";
-              
+
             }
         },
         //rename
         async deleteDataLineById() {
-            const token = localStorage.getItem('token');
+            const token = this.stateAuth.token;
             const url = `${this.urlApi}/${this.selectedRowDataLineId}`;
             const headers = {
                 'Content-Type': 'application/json',
@@ -108,7 +112,7 @@ export default {
                 'Authorization': `Bearer ${token}`,
             }
             console.log("deleteDataLineById", headers);
-            
+
             try {
                 const response = await axios.delete(url, {
                     headers: headers
@@ -116,7 +120,7 @@ export default {
                 this.loadItems()
             } catch (error) {
                 this.errorMessage = "Hiba az adatok betöltésekor";
-              
+
             }
         },
         //rename
