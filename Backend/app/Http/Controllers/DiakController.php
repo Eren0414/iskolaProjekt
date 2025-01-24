@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Diak;
 use App\Http\Requests\StoreDiakRequest;
 use App\Http\Requests\UpdateDiakRequest;
+use Illuminate\Support\Facades\DB;
 
 class DiakController extends Controller
 {
     public function index()
     {
-        $rows = Diak::with('osztaly')->get(); // Betölti az osztály adatokat is
+        $rows = Diak::with('osztalies')->get(); // Betölti az osztály adatokat is
+        $sql = "SELECT d.id, d.osztalyId, o.osztalyNev, d.nev, d.neme, d.szuletett, d.helyseg, d.osztondij, d.atlag from diaks d
+            INNER JOIN osztalies o ON d.osztalyId = o.id";
+
+        $rows = DB::select($sql);
         $data = [
             'message' => 'ok',
             'data' => $rows,

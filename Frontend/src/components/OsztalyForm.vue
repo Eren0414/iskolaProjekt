@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p>{{ dataLine }}</p>
+        <p v-if="debug">{{ dataLine }}</p>
         <form class="row g-4 needs-validation was-validated" novalidate>
             <!-- Name -->
             <div class="col-md-8">
@@ -17,7 +17,13 @@
 </template>
 
 <script>
+import { DEBUG } from "@/helpers/debug.js";
 export default {
+    data() {
+        return {
+            debug: DEBUG,
+        }
+    },
     props: ["dataLine"],
     emits: ["saveDataLine"],
     mounted() {
