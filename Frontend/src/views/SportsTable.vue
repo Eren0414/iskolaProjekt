@@ -12,6 +12,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
+                    <!-- Módosítás -->
                     <th scope="col">Műveletek</th>
                     <th scope="col">Sportok</th>
                 </tr>
@@ -23,6 +24,7 @@
                         <OperationsCrud :dataLine="dataLine" @onClickDeleteButton="onClickDeleteButton"
                             @onClickUpdate="onClickUpdate" @onClickCreate="onClickCreate" />
                     </td>
+                    <!-- Módosítás -->
                     <td>{{ dataLine.sportNev }}</td>
                 </tr>
             </tbody>
@@ -34,7 +36,7 @@
                 {{ messageYesNo }}
             </div>
 
-            <SportsForm v-if="state == 'Create' || state == 'Update'" :dataLine="dataLine"
+            <DataForm v-if="state == 'Create' || state == 'Update'" :dataLine="dataLine"
                 @saveDataLine="saveDataLineHandler" />
         </Modal>
     </div>
@@ -42,13 +44,15 @@
 
 <script>
 import Modal from "@/components/Modal.vue";
-import SportsForm from "@/components/SportsForm.vue";
+// Módosítás
+import DataForm from "@/components/SportsForm.vue";
 import OperationsCrud from "@/components/OperationsCrud.vue";
 import axios from "axios";
 import * as bootstrap from "bootstrap";
 import { BASE_URL } from "@/helpers/baseUrls";
 import { useAuthStore } from "@/stores/useAuthStore";
 
+// Módosítás
 class DataLine {
     constructor(id = null, sportNev = null) {
         this.id = id;
@@ -57,7 +61,7 @@ class DataLine {
 }
 
 export default {
-    components: { SportsForm, OperationsCrud, Modal },
+    components: { DataForm, OperationsCrud, Modal },
     mounted() {
         this.loadItems();
         this.modal = new bootstrap.Modal("#modal", {
@@ -66,6 +70,7 @@ export default {
     },
     data() {
         return {
+            // Módosítás
             urlApi: `${BASE_URL}/sports`,
             stateAuth: useAuthStore(),
             modal: null,
@@ -123,12 +128,26 @@ export default {
 
             }
         },
-        //rename
-        createDataLine() {
-            this.collection.push(this.dataLine);
-            this.state = "Read";
+        async createDataLine() {
+            const token = this.stateAuth.token;
+            const url = `${this.urlApi}`;
+            const headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${this.stateAuth.token}`,
+            }
+            console.log("createDataLine", headers);
+
+            try {
+                const response = await axios.post(url, {
+                    headers: headers
+                });
+                this.loadItems()
+            } catch (error) {
+                console.log(error.response);
+                this.errorMessage = "Hiba az adatok betöltésekor";
+            }
         },
-        //reaname
         updateDataLine() {
             const index = this.collection.findIndex((p) => p.id == this.dataLine.id);
             this.collection[index] = this.dataLine;
@@ -142,6 +161,7 @@ export default {
         },
         onClickDeleteButton(dataLine) {
             this.title = "Törlés";
+            // Módosítás
             this.messageYesNo = `Valóban törölniakarod? Név: ${dataLine.sportNev}`;
             this.yes = "Igen";
             this.no = "Nem";
@@ -150,7 +170,7 @@ export default {
         },
         onClickUpdate(dataLine) {
             this.state = "Update";
-            this.title = "Foglalkozás módosítása";
+            this.title = "Adat módosítása";
             this.yes = null;
             this.no = "Mégsem";
             this.size = "lg";
@@ -158,13 +178,13 @@ export default {
             this.dataLine = { ...dataLine };
         },
         onClickCreate() {
-            this.title = "Új Foglalkozás létrehozása";
+            this.title = "Új Adat létrehozása";
             this.yes = null;
             this.no = "Mégsem";
             this.size = "lg";
 
             this.state = "Create";
-            this.dataLine = new DataLine(this.uniqid());
+            this.dataLine = new DataLine();
         },
         onClickTr(id) {
             this.selectedRowDataLineId = id;
@@ -183,22 +203,8 @@ export default {
             }
         },
 
-        uniqid(length = 10) {
-            const characters =
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            let result = "";
-            for (let i = 0; i < length; i++) {
-                const randomIndex = Math.floor(Math.random() * characters.length);
-                result += characters.charAt(randomIndex);
-            }
-            return result;
-        },
     },
     computed: {
-        // collection(){
-        //   //rename
-        //   return this.professions
-        // }
     },
 };
 </script>
